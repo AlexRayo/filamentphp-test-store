@@ -26,6 +26,11 @@ class PurchaseResource extends Resource
                 Forms\Components\Select::make('supplier_id')
                     ->relationship('supplier', 'name')
                     ->required()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        // Aquí podrías pasar el valor del supplier_id a los campos dentro del repeater
+                        $set('purchaseDetails.*.supplier_id', $state); // Propaga el supplier_id dentro del Repeater
+                    })
                     ->label('Supplier'),
 
                 Forms\Components\Repeater::make('purchaseDetails')
@@ -33,10 +38,21 @@ class PurchaseResource extends Resource
                     ->label('Purchase Details')
                     ->schema([
                         Forms\Components\Select::make('product_id')
-                            ->relationship('product', 'name')
                             ->searchable()
                             ->required()
                             ->reactive()
+                            ->options(function (Get $get){
+                                $supplierId = $get('supplier_id');  // Obtén el valor de supplier_id
+                                // if ($supplierId) {
+                                //     dump($supplierId);
+                                    // Filtra los productos según el supplier_id
+                                    return Product::where('supplier_id', $supplierId)
+                                        ->pluck('name', 'id')
+                                        ->toArray();  // Convierte los resultados a un array
+                                //}
+                                //return []; 
+                        }
+                            )
                             ->afterStateUpdated(function($get, $set){
                                 $product = Product::find($get('product_id'));
                                 if ($product) {
@@ -66,6 +82,14 @@ class PurchaseResource extends Resource
                             ->content(function($get){
                                 return $get('quantity') * $get('unit_price');
                             }),
+
+                            Forms\Components\Placeholder::make('test')
+                        ->label('Supplier ID seleccionado')
+                        ->reactive()
+                        ->content(function(Get $get) {
+                            $supplierId = $get('supplier_id');
+                            return $supplierId ? "Supplier ID: $supplierId" : 'unknown';
+                        }),
                     ])
                     ->columns(3)
                     ->reactive(),
