@@ -4,10 +4,12 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PurchaseResource\Pages;
 use App\Models\Product;
 use App\Models\Purchase;
+use App\Models\Supplier;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Forms\Get;
@@ -18,6 +20,12 @@ class PurchaseResource extends Resource
     protected static ?string $model = Purchase::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        // Solo mostrar en el menú si hay productos
+        return Product::exists();
+    }
 
     public static function form(Form $form): Form
     {
@@ -109,7 +117,6 @@ class PurchaseResource extends Resource
             ]);
     }
 
-
     public static function table(Table $table): Table
     {
         return $table
@@ -134,7 +141,13 @@ class PurchaseResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ]);        
+    }
+
+    //Ovweride this method to allow adding new purchses only if there is some product
+    public static function canCreate(): bool
+    {
+        return Product::exists();
     }
 
     public static function getRelations(): array

@@ -18,6 +18,10 @@ class PurchaseDetailResource extends Resource
     protected static ?string $model = PurchaseDetail::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     public static function form(Form $form): Form
     {
@@ -41,7 +45,7 @@ class PurchaseDetailResource extends Resource
                     ->required()
                     ->label('Unit Price'),
             ]);
-    }
+    }    
 
     public static function table(Table $table): Table
     {

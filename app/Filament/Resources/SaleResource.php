@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SaleResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
+use App\Models\Product;
+use App\Models\Purchase;
 use App\Models\Sale;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -18,6 +20,12 @@ class SaleResource extends Resource
     protected static ?string $model = Sale::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        // Solo mostrar en el menú si hay compras
+        return Product::exists();
+    }
 
     public static function form(Form $form): Form
     {

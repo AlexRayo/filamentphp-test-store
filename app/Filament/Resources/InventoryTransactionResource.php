@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\InventoryTransactionResource\Pages;
 use App\Filament\Resources\InventoryTransactionResource\RelationManagers;
 use App\Models\InventoryTransaction;
+use App\Models\Purchase;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -18,6 +19,12 @@ class InventoryTransactionResource extends Resource
     protected static ?string $model = InventoryTransaction::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        // Solo mostrar en el menú si hay compras
+        return Purchase::exists();
+    }
 
     public static function form(Form $form): Form
     {
