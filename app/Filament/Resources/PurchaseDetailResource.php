@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseDetailResource\Pages;
 use App\Filament\Resources\PurchaseDetailResource\RelationManagers;
+use App\Models\Purchase;
 use App\Models\PurchaseDetail;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -20,7 +21,7 @@ class PurchaseDetailResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return Purchase::exists();
     }
 
     public static function form(Form $form): Form

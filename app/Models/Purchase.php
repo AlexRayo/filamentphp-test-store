@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Purchase extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'supplier_id',
     ];
@@ -19,10 +21,8 @@ class Purchase extends Model
     }
 
     // Relación con la tabla 'purchase_details'
-
     public function purchaseDetails()
     {
         return $this->hasMany(PurchaseDetail::class);
     }
-
 }
