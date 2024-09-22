@@ -10,9 +10,8 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PurchaseDetailResource extends Resource
 {
@@ -29,10 +28,6 @@ class PurchaseDetailResource extends Resource
         return $form
             ->schema([
                 //
-                Forms\Components\Select::make('purchase_id')
-                    ->relationship('purchase', 'id')
-                    ->required()
-                    ->label('Purchase ID'),
                 Forms\Components\Select::make('product_id')
                     ->relationship('product', 'name')
                     ->required()
@@ -41,10 +36,6 @@ class PurchaseDetailResource extends Resource
                     ->numeric()
                     ->required()
                     ->label('Quantity'),
-                Forms\Components\TextInput::make('unit_price')
-                    ->numeric()
-                    ->required()
-                    ->label('Unit Price'),
             ]);
     }    
 
@@ -52,7 +43,9 @@ class PurchaseDetailResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('purchase_id'),
+                TextColumn::make('product_id'),
+                TextColumn::make('quantity'),
             ])
             ->filters([
                 //
