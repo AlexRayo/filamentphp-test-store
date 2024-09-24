@@ -14,7 +14,6 @@ class PurchaseDetail extends Model
         'purchase_id',
         'product_id',
         'quantity',
-        'unit_price',
     ];
 
     public function purchase()

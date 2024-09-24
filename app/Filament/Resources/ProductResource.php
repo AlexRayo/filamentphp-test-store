@@ -32,27 +32,77 @@ class ProductResource extends Resource
       ->schema([
         Forms\Components\Select::make('supplier_id')
           ->relationship('supplier', 'name')
-          ->required()
-          ->label('Supplier'),
-        Forms\Components\TextInput::make('name')
-          ->required()
-          ->label('Product Name'),
-        Forms\Components\Textarea::make('description')
-          ->label('Description'),
-        Forms\Components\TextInput::make('price')
-          ->numeric()
-          ->required()
-          ->label('Price'),
-        Forms\Components\TextInput::make('stock')
-          ->numeric()
-          ->required()
-          ->label('Stock'),
+          ->label('Supplier')
+          ->required(),
         Forms\Components\Select::make('category_id')
           ->relationship('category', 'name')
+          ->label('Category')
+          ->required(),
+        Forms\Components\TextInput::make('name')
+          ->label('Product Name')
+          ->required(),
+        Forms\Components\Textarea::make('description')
+          ->label('Description'),
+        Forms\Components\TextInput::make('buy_price')
+          ->label('Buy Price')
+          ->numeric()
+          ->reactive()
+          ->required(),
+        Forms\Components\TextInput::make('profit_margin')
+          ->label('Profit Margin (%)')
+          ->numeric()
+          ->reactive()
           ->required()
-          ->label('Category'),
+          ->default(20),
+        Forms\Components\TextInput::make('iva')
+          ->label('IVA (%)')
+          ->numeric()
+          ->reactive()
+          ->required()
+          ->default(15),
+        Forms\Components\TextInput::make('discount')
+          ->label('Discount (%)')
+          ->numeric()
+          ->reactive()
+          ->required()
+          ->default(0),
+        Forms\Components\Placeholder::make('sell_price')
+          ->label('SELL PRICE')
+          ->reactive()
+          ->content(function ($get) {
+            $buyPrice = $get('buy_price') ?? 0;
+            $profitMargin = $get('profit_margin') ?? 0;
+            $iva = $get('iva') ?? 0;
+            $discount = $get('discount') ?? 0;
+
+            // Calcula el sell_price
+            $sellPrice = ($buyPrice + ($buyPrice * ($iva / 100)) + ($buyPrice * ($profitMargin / 100))) - $discount;
+            return '$' . $sellPrice;
+          }),
+        Forms\Components\Placeholder::make('stock')
+          ->label('STOCK')
+          ->default(0)
+          ->content(function ($state) {
+            return $state;
+          })
       ]);
   }
+
+  protected static function updateSellPrice($set, $get)
+  {
+    // Calcula el precio de venta basado en buy_price, IVA y discount
+    $buyPrice = $get('buy_price') ?? 0;
+    $iva = $get('iva') ?? 0;
+    $discount = $get('discount') ?? 0;
+
+    // Calcula el sell_price
+    $sellPrice = ($buyPrice + ($buyPrice * ($iva / 100))) - $discount;
+
+    // Actualiza el campo sell_price
+    $set('sell_price', $sellPrice);
+  }
+
+
 
   public static function shouldRegisterNavigation(): bool
   {
@@ -62,35 +112,6 @@ class ProductResource extends Resource
 
   public static function table(Table $table): Table
   {
-    // if (!Category::exists()) {
-    //     // Si no hay categorías, configuramos el estado vacío con un botón
-    //     return $table
-    //         ->columns([])  // No mostrar columnas porque no hay datos
-    //         ->emptyStateHeading('No categories found')
-    //         ->emptyStateDescription('You need to create a category before adding products.')
-    //         ->emptyStateActions([
-    //             Action::make('Create Category')
-    //                 ->url(route('filament.admin.resources.categories.create'))
-    //                 ->label('Create Category')
-    //                 ->button(),
-    //         ]);
-    // }
-    // else if(!Supplier::exists()){
-    //     // Si no hay Suppliers, configuramos el estado vacío con un botón
-    //     return $table
-    //         ->columns([]) 
-    //         ->emptyStateHeading('No suppliers found')
-    //         ->emptyStateDescription('You need to create at least one supplier before adding purchases.')
-    //         ->emptyStateActions([
-    //             Action::make('Create a supplier')
-    //                 ->url(route('filament.admin.resources.suppliers.create'))
-    //                 ->label('Create a Supplier')
-    //                 ->button(),
-    //         ]);
-    //     } 
-
-    // else {
-    // Si hay categorías, mostramos la tabla normal
     return $table
       ->columns([
         TextColumn::make('name'),

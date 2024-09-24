@@ -10,12 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('sale_details', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('sale_id')->constrained('sales');
-            $table->foreignId('product_id')->constrained('products');
-            $table->integer('quantity');
-            $table->timestamps();
+        Schema::table('products', function (Blueprint $table) {
+            $table->decimal('profit_margin', 10, 2)->after('buy_price');
         });
     }
 
@@ -24,6 +20,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('sale_details');
+        Schema::table('_products', function (Blueprint $table) {
+            //
+        });
     }
 };

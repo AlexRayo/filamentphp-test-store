@@ -14,6 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Illuminate\Support\Facades\Log;
 
 class PurchaseResource extends Resource
 {
@@ -39,7 +40,7 @@ class PurchaseResource extends Resource
             //reset
             $set('purchaseDetails.*.product_id', "");
             $set('purchaseDetails.*.quantity', 1);
-            $set('purchaseDetails.*.unit_price', 0);
+            $set('product.*.unit_price', 0);
             $set('purchaseDetails.*.total_row', 0);
             $set('purchaseDetails.*.total', 0);
 
@@ -78,7 +79,6 @@ class PurchaseResource extends Resource
               ->label('Quantity'),
             Forms\Components\TextInput::make('unit_price')
               ->numeric()
-              ->required()
               ->label('Unit Price')
               ->readOnly()
             ,
@@ -132,7 +132,7 @@ class PurchaseResource extends Resource
             return $state;
           }),
         TextColumn::make('purchaseDetails.quantity')->label('Quantity'),
-        TextColumn::make('purchaseDetails.unit_price')->label('Unit Price')
+        TextColumn::make('purchaseDetails.product.buy_price')->label('Unit Price')
           ->money('USD'),
         TextColumn::make('purchaseDetails')->label('Total')
           ->formatStateUsing(function ($record) {
@@ -142,9 +142,10 @@ class PurchaseResource extends Resource
 
             // Suma de los totales para cada detalle de compra
             $total = 0;
+            log::info($record->purchaseDetails);
             foreach ($record->purchaseDetails as $detail) {
-              $quantity = $detail['quantity'] ?? 0;
-              $unitPrice = $detail['unit_price'] ?? 0;
+              $quantity = $detail->quantity ?? 0;
+              $unitPrice = $detail->product->buy_price ?? 0;
               $total += $quantity * $unitPrice;
             }
 
