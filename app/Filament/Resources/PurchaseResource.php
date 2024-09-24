@@ -123,10 +123,33 @@ class PurchaseResource extends Resource
       ->columns([
         TextColumn::make('date')->label('Purchase Date'),
         TextColumn::make('supplier.name')->label('Supplier'),
-        TextColumn::make('purchaseDetails.product.name')->label('Product Name'),
+        TextColumn::make('purchaseDetails.product.name')
+          ->label('Product Name')
+          ->formatStateUsing(function ($state) {
+            if ($state == "" || $state == null) {
+              return 'EMPTY ORDER';
+            }
+            return $state;
+          }),
         TextColumn::make('purchaseDetails.quantity')->label('Quantity'),
-        TextColumn::make('purchaseDetails.unit_price')->label('Unit Price'),
-        TextColumn::make('total')->label('Total'),
+        TextColumn::make('purchaseDetails.unit_price')->label('Unit Price')
+          ->money('USD'),
+        TextColumn::make('purchaseDetails')->label('Total')
+          ->formatStateUsing(function ($record) {
+            if ($record->purchaseDetails->isEmpty()) {
+              return 'EMPTY ORDER';
+            }
+
+            // Suma de los totales para cada detalle de compra
+            $total = 0;
+            foreach ($record->purchaseDetails as $detail) {
+              $quantity = $detail['quantity'] ?? 0;
+              $unitPrice = $detail['unit_price'] ?? 0;
+              $total += $quantity * $unitPrice;
+            }
+
+            return '$' . number_format($total, 2);
+          }),
         TextColumn::make('created_at')->label('Created At'),
         TextColumn::make('updated_at')->label('Updated At'),
 

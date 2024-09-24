@@ -31,7 +31,7 @@ class PurchaseDetail extends Model
     protected static function booted()
     {
         // Actualizar stock cuando se crea un detalle de compra
-        static::saved(function ($purchaseDetail) {
+        static::created(function ($purchaseDetail) {
             $product = $purchaseDetail->product;
             if ($product) {
                 Log::info('Stock actualizado para el producto ID: ' . $product->id);
@@ -42,29 +42,30 @@ class PurchaseDetail extends Model
 
         // Actualizar stock cuando se modifica un detalle de compra
         // Evento que se ejecuta después de modificar un detalle de compra
-    static::updating(function ($purchaseDetail) {
-        $product = $purchaseDetail->product;
-        if ($product) {
-            // Obtener la cantidad anterior antes de la actualización
-            $originalQuantity = $purchaseDetail->getOriginal('quantity');
-            $newQuantity = $purchaseDetail->quantity;
+        static::updated(function ($purchaseDetail) {
+            $product = $purchaseDetail->product;
+            if ($product) {
+                // Obtener la cantidad anterior antes de la actualización
+                $originalQuantity = $purchaseDetail->getOriginal('quantity');
+                $newQuantity = $purchaseDetail->quantity;
 
-            // Calcular la diferencia entre las cantidades
-            $quantityDifference = $newQuantity - $originalQuantity;
+                // Calcular la diferencia entre las cantidades
+                $quantityDifference = $newQuantity - $originalQuantity;
 
-            Log::info("originalQuantity: {$originalQuantity}");
-            Log::info("NewQty: {$newQuantity}");
-            log::info("Actual Stock: {$product->stock}");
-            log::info("Diferencia: {$quantityDifference}");
-            log::info("*****************************************");
+                Log::info("originalQuantity: {$originalQuantity}");
+                Log::info("NewQty: {$newQuantity}");
+                log::info("Actual Stock: {$product->stock}");
+                log::info("Diferencia: {$quantityDifference}");
 
-            // Ajustar el stock en función de la diferencia (si es positiva o negativa)
-            $product->stock += $quantityDifference;
-            $product->save();
+                // Ajustar el stock en función de la diferencia (si es positiva o negativa)
+                $updatedStock = $product->stock + $quantityDifference;
+                $product->stock = $updatedStock;
+                $product->save();
 
-            Log::info('Stock actualizado para el producto ID: ' . $product->id);
-        }
-    });
+                Log::info('Stock actualizado a: ' . $updatedStock);
+                log::info("*****************************************");
+            }
+        });
 
 
         // Eliminar stock cuando se borra un detalle de compra

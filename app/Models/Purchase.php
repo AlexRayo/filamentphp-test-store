@@ -25,4 +25,20 @@ class Purchase extends Model
     {
         return $this->hasMany(PurchaseDetail::class);
     }
+    // Método para actualizar los campos después de eliminar un detalle de compra
+    public function updateAfterDetailRemoved()
+    {
+        // Recalcular el total de la compra
+        $this->total = $this->purchaseDetails->sum(function ($detail) {
+            return $detail->quantity * $detail->unit_price;
+        });
+
+        // Si no hay detalles de compra, establecer el total a 0
+        if ($this->purchaseDetails->isEmpty()) {
+            $this->total = 0;
+        }
+
+        // Guardar los cambios
+        $this->save();
+    }
 }
