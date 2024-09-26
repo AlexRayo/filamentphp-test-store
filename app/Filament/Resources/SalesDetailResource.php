@@ -18,7 +18,7 @@ class SalesDetailResource extends Resource
 {
     protected static ?string $model = SaleDetail::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-wallet';
 
     public static function shouldRegisterNavigation(): bool
     {

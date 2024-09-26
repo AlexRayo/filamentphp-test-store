@@ -9,7 +9,6 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Forms\Get;
@@ -20,7 +19,7 @@ class PurchaseResource extends Resource
 {
   protected static ?string $model = Purchase::class;
 
-  protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+  protected static ?string $navigationIcon = 'heroicon-o-inbox-arrow-down';
 
   public static function shouldRegisterNavigation(): bool
   {

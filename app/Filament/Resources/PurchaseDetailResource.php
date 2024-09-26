@@ -20,7 +20,8 @@ class PurchaseDetailResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     public static function shouldRegisterNavigation(): bool
     {
-        return Purchase::exists();
+        return false;
+        //return Purchase::exists();
     }
 
     public static function form(Form $form): Form
@@ -37,7 +38,7 @@ class PurchaseDetailResource extends Resource
                     ->required()
                     ->label('Quantity'),
             ]);
-    }    
+    }
 
     public static function table(Table $table): Table
     {

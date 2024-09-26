@@ -18,7 +18,7 @@ class InventoryTransactionResource extends Resource
 {
     protected static ?string $model = InventoryTransaction::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
 
     public static function shouldRegisterNavigation(): bool
     {

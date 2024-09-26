@@ -3,23 +3,18 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SaleResource\Pages;
-use App\Filament\Resources\SaleResource\RelationManagers;
 use App\Models\Product;
-use App\Models\Purchase;
 use App\Models\Sale;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-
 class SaleResource extends Resource
 {
     protected static ?string $model = Sale::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
     public static function shouldRegisterNavigation(): bool
     {
@@ -36,6 +31,7 @@ class SaleResource extends Resource
                     ->required()
                     ->label('User'),
                 Forms\Components\Repeater::make('saleDetails')
+                    ->relationship('saleDetails')
                     ->label('Products')
                     ->schema([
                         Forms\Components\Select::make('product_id')
