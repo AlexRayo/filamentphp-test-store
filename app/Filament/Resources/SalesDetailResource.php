@@ -4,7 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SalesDetailResource\Pages;
 use App\Filament\Resources\SalesDetailResource\RelationManagers;
-use App\Models\SalesDetail;
+use App\Models\Sale;
+use App\Models\SaleDetail;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,13 +16,13 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SalesDetailResource extends Resource
 {
-    protected static ?string $model = SalesDetail::class;
+    protected static ?string $model = SaleDetail::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return Sale::exists();
     }
 
     public static function form(Form $form): Form
@@ -30,7 +31,7 @@ class SalesDetailResource extends Resource
             ->schema([
                 //
             ]);
-    }    
+    }
 
     public static function table(Table $table): Table
     {

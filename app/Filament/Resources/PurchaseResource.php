@@ -40,7 +40,7 @@ class PurchaseResource extends Resource
             //reset
             $set('purchaseDetails.*.product_id', "");
             $set('purchaseDetails.*.quantity', 1);
-            $set('product.*.unit_price', 0);
+            $set('product.*.buy_price', 0);
             $set('purchaseDetails.*.total_row', 0);
             $set('purchaseDetails.*.total', 0);
 
@@ -65,9 +65,9 @@ class PurchaseResource extends Resource
               ->afterStateUpdated(function ($get, $set) {
                 $product = Product::find($get('product_id'));
                 if ($product) {
-                  $set('unit_price', $product->price);
-                  $set('total_row', $get('quantity') * $product->price);
-                  return $product->price;
+                  $set('buy_price', $product->buy_price);
+                  $set('total_row', $get('quantity') * $product->buy_price);
+                  //return $product->buy_price;
                 }
               }),
             Forms\Components\TextInput::make('quantity')
@@ -77,7 +77,7 @@ class PurchaseResource extends Resource
               ->default(1)
               ->reactive()
               ->label('Quantity'),
-            Forms\Components\TextInput::make('unit_price')
+            Forms\Components\TextInput::make('buy_price')
               ->numeric()
               ->label('Unit Price')
               ->readOnly()
@@ -88,7 +88,7 @@ class PurchaseResource extends Resource
               ->label('Total per Item')
               ->reactive()
               ->content(function ($get) {
-                return $get('quantity') * $get('unit_price');
+                return $get('quantity') * $get('buy_price');
               }),
 
             Forms\Components\Placeholder::make('test')
@@ -109,7 +109,7 @@ class PurchaseResource extends Resource
             $purchaseDetails = collect($get('purchaseDetails'));
 
             $total = $purchaseDetails->sum(function ($item) {
-              $sub_total = $item['quantity'] * $item['unit_price'];
+              $sub_total = $item['quantity'] * $item['buy_price'];
               return $sub_total++;
             });
             return $total;
@@ -121,7 +121,7 @@ class PurchaseResource extends Resource
   {
     return $table
       ->columns([
-        TextColumn::make('date')->label('Purchase Date'),
+        TextColumn::make('created_at')->label('Purchase Date'),
         TextColumn::make('supplier.name')->label('Supplier'),
         TextColumn::make('purchaseDetails.product.name')
           ->label('Product Name')
@@ -155,6 +155,7 @@ class PurchaseResource extends Resource
         TextColumn::make('updated_at')->label('Updated At'),
 
       ])
+      ->defaultSort('id', 'desc')
       ->filters([
         //
       ])

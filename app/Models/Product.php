@@ -39,7 +39,7 @@ class Product extends Model
     }
 
     // Relación con la tabla 'sales_details'
-    public function salesDetails()
+    public function saleDetails()
     {
         return $this->hasMany(SaleDetail::class);
     }

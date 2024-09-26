@@ -31,19 +31,53 @@ class SaleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('total')
-                    ->numeric()
-                    ->required()
-                    ->label('Total Amount'),
-                Forms\Components\DateTimePicker::make('date')
-                    ->required()
-                    ->label('Sale Date'),
                 Forms\Components\Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required()
-                    ->label('Sold By'),
-            ]);
+                    ->label('User'),
+                Forms\Components\Repeater::make('saleDetails')
+                    ->label('Products')
+                    ->schema([
+                        Forms\Components\Select::make('product_id')
+                            ->label('Select Product')
+                            ->searchable()
+                            ->options(Product::all()->pluck('name', 'id')->toArray())
+                            ->reactive()
+                            ->required()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $product = Product::find($state);
+                                if ($product) {
+                                    $set('sell_price', $product->sell_price);  // Establecer precio de venta
+                                    $set('quantity', 1);  // Cantidad por defecto
+                                }
+                            }),
+                        Forms\Components\TextInput::make('quantity')
+                            ->label('Quantity')
+                            ->numeric()
+                            ->reactive()
+                            ->required()
+                            ->default(1)
+                            ->afterStateUpdated(function (callable $get, callable $set) {
+                                $sellPrice = $get('sell_price') ?? 0;
+                                $quantity = $get('quantity') ?? 1;
+                                $set('total', $sellPrice * $quantity);  // Calcular total
+                            }),
+                        Forms\Components\TextInput::make('sell_price')
+                            ->readOnly()
+                            ->label('Sale Price'),
+                        Forms\Components\Placeholder::make('total')
+                            ->label('Total')
+                            ->content(function ($get) {
+                                $sellPrice = $get('sell_price') ?? 0;
+                                $quantity = $get('quantity') ?? 1;
+                                return '$' . number_format($sellPrice * $quantity, 2);
+                            }),
+                    ])
+                    ->columns(4)  // Organiza los campos en columnas
+                    ->minItems(1),  // Establece un mínimo de productos
+            ])->columns(1);
     }
+
 
     public static function table(Table $table): Table
     {
@@ -51,6 +85,7 @@ class SaleResource extends Resource
             ->columns([
                 //
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
                 //
             ])
