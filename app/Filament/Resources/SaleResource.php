@@ -69,8 +69,8 @@ class SaleResource extends Resource
                                 return '$' . number_format($sellPrice * $quantity, 2);
                             }),
                     ])
-                    ->columns(4)  // Organiza los campos en columnas
-                    ->minItems(1),  // Establece un mínimo de productos
+                    ->columns(4)
+                    ->minItems(1),
             ])->columns(1);
     }
 
